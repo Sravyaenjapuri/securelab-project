@@ -36,36 +36,50 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <SecurityLabDashboard />
-            </ProtectedRoute>
-          } />
+            // <ProtectedRoute>
+              <SecurityLabDashboard />}/>
+            {/* </ProtectedRoute> */}
+          
           <Route path="/sql_injection" element={
-            <ProtectedRoute>
+           
               <SQLInjectionHomepage />
-            </ProtectedRoute>
+            
           } />
           <Route path="/lab/:labId" element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <SQLPlayground />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           } />
           <Route path="/lab/:labId/:category" element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <UnionInjectionLab />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           } />
           {/* Optional: fallback for manual entry */}
           <Route path="/lab/union-test" element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <UnionInjectionLab />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           } />
           {/* XSS Lab Routes */}
-          <Route path="/xss-lab" element={<ProtectedRoute><XSSHomepage /></ProtectedRoute>} />
-          <Route path="/xss-lab/reflected" element={<ProtectedRoute><ReflectedXSS /></ProtectedRoute>} />
-          <Route path="/xss-lab/stored" element={<ProtectedRoute><StoredXSS /></ProtectedRoute>} />
-          <Route path="/xss-lab/dom" element={<ProtectedRoute><DOMXSS /></ProtectedRoute>} />
+          <Route path="/xss-lab" element={
+            // <ProtectedRoute>
+              <XSSHomepage />
+            // </ProtectedRoute>
+          } 
+            />
+          <Route path="/xss-lab/reflected" element={
+            // <ProtectedRoute>
+              <ReflectedXSS />
+              // </ProtectedRoute>
+            } />
+          <Route path="/xss-lab/stored" element={
+            // <ProtectedRoute>
+              <StoredXSS />}/>
+              {/* </ProtectedRoute> */}
+            
+            
+          <Route path="/xss-lab/dom" element={<DOMXSS />} />
         </Routes>
       </Router>
       <ToastContainer />
