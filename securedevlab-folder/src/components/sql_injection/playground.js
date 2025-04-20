@@ -3,10 +3,12 @@ import LoginTester from '../sql_injection_helper/login';
 import { useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
 import './playground.css';
+import { useNavigate } from 'react-router-dom';
 
 const BACKEND_URL = "https://securedevlab.onrender.com";
 
 const SQLPlayground = () => {
+  const navigate = useNavigate();
   const { labId } = useParams();
   const [labDetails, setLabDetails] = useState({});
   const [query, setQuery] = useState("SELECT * FROM users;");
@@ -121,7 +123,7 @@ const SQLPlayground = () => {
               <button className="stay-button" onClick={() => setShowSuccessModal(false)}>
                 Stay Here
               </button>
-              <button className="leave-button" onClick={() => window.location.href = '/sql_injection'}>
+              <button className="leave-button" onClick={() => navigate('/sql_injection')}>
                 Return to Labs
               </button>
             </div>

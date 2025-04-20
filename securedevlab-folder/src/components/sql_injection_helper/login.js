@@ -70,7 +70,7 @@ const LoginTester = ({ solution, onSuccess, title, labId }) => {
 
   return (
     <>
-    {showSuccessModal && (
+    {/* {showSuccessModal && (
   <div style={{
     position: 'fixed',
     top: 0, left: 0, right: 0, bottom: 0,
@@ -100,7 +100,7 @@ const LoginTester = ({ solution, onSuccess, title, labId }) => {
       </div>
     </div>
   </div>
-)}
+)} */}
 
     <div className="container py-5">
       <div className="row justify-content-center">
