@@ -2,16 +2,51 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-const LoginTester = ({ solution, onSuccess, title }) => {
+const LoginTester = ({ solution, onSuccess, title, labId }) => {
   // console.log(solution)
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginResult, setLoginResult] = useState(null);
   const navigate = useNavigate(); 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const markLabAsCompleted = async () => {
+    try {
+      const userEmail = localStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
+
+      const response = await fetch('https://securedevlab.onrender.com/api/complete-lab', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_email: userEmail,
+          lab_id: labId,
+          category: 'sql_injection'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark lab as completed');
+      }
+
+      console.log('Lab marked as completed successfully');
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error('Error marking lab as completed:', error);
+    }
+  };
+
   const handleLogin = async () => {
     try {
-      const res = await fetch('https://securedevlab.onrender.com/login', {
+      const res = await fetch('https://securedevlab.onrender.com/lab1/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -25,6 +60,8 @@ const LoginTester = ({ solution, onSuccess, title }) => {
       if (resultText.trim() === solution?.trim()) {
         toast.success("✅ Lab Completed Successfully!");
         setShowSuccessModal(true);
+        // Mark the lab as completed in the backend
+        await markLabAsCompleted();
       }
     } catch (err) {
       setLoginResult({ success: false, error: err.message });

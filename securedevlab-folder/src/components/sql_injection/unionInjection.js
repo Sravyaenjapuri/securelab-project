@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ShopUnionLab from '../sql_injection_helper/ShopUnionLab';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import Navbar from '../Navbar';
+import './unionInjection.css';
 
 const BACKEND_URL = "https://securedevlab.onrender.com";
 
@@ -25,10 +26,41 @@ const UnionInjectionLab = () => {
       const res = await fetch(`${BACKEND_URL}/api/lab/${parsedLabId}`);
       const data = await res.json();
       setLabDetails(data);
-      console.log(data)
     };
     fetchLabDetails();
   }, [parsedLabId]);
+
+  const markLabAsCompleted = async () => {
+    try {
+      const userEmail = localStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
+
+      const response = await fetch(`${BACKEND_URL}/api/complete-lab`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_email: userEmail,
+          lab_id: parsedLabId,
+          category: 'sql_injection'
+        }),
+      });
+
+      if (response.ok) {
+        toast.success(`✅ ${labDetails.title} successfully completed!`);
+        setShowSuccessModal(true);
+      } else {
+        console.error('Failed to mark lab as completed');
+      }
+    } catch (error) {
+      console.error('Error marking lab as completed:', error);
+    }
+  };
 
   const runInjection = async () => {
     try {
@@ -45,13 +77,12 @@ const UnionInjectionLab = () => {
         if(data.result.length > 0){
           if(labId==5){
             if(data.result[0].name == 'iPhone'){
-              toast.success(`✅ ${labDetails.title} successfully completed!`);
-              setShowSuccessModal(true);
+              markLabAsCompleted();
             }
           }
           else{
-          // toast.success(`✅ ${labDetails.title} successfully completed!`);
-          setShowSuccessModal(true);}
+            markLabAsCompleted();
+          }
         }
       } else {
         setResult([]);
@@ -88,95 +119,82 @@ const UnionInjectionLab = () => {
       runInjection();
     }
     fetchProducts(selectedCategory);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryName]);
 
   return (
-    <>
-     
-        <ShopUnionLab labDetails={labDetails}/> 
-      <ToastContainer />
-   
-      {/* Success Modal */}
-      {showSuccessModal && (
-        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">✅ {labDetails.title} Completed!</h5>
-                <button type="button" className="btn-close" onClick={() => setShowSuccessModal(false)}></button>
-              </div>
-              {/* <ShopUnionLab products={products} /> */}
-              <div className="modal-body">
-                <p>Do you want to return to the SQL Injection homepage?</p>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowSuccessModal(false)}>
-                  Stay Here
-                </button>
-                <button type="button" className="btn btn-primary" onClick={() => navigate('/sql_injection')}>
-                  Go Home
-                </button>
-
-              </div>
-            </div>
+    <div className="page-layout">
+      <Navbar />
+      <main className="main-content">
+        <div className="union-container">
+          <div className="union-header">
+            <h1>{labDetails.title}</h1>
+            <p className="lab-description">{labDetails.description}</p>
           </div>
-        </div>
-      )}
 
-      <div className="container py-5">
-        <div className="row">
-          <div className="col-lg-8 mx-auto">
-            {/* Lab Details Card */}
-            {/* <div className="card shadow-sm mb-4"> */}
-              {/* <div className="card-body"> */}
-                <h4 className="">SOLVE THIS: {labDetails.subtitle}</h4> 
-                {/* <p className="card-text">{labDetails.description}</p> */}
-              {/* </div> */}
-            {/* </div> */}
-
-            {/* Injection Input Card */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h3 className="card-title h4 mb-3">SQL Injection Playground</h3>
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    className="form-control font-monospace"
-                    value={categoryName}
-                    onChange={e => setCategoryName(e.target.value)}
-                    placeholder="Try: ' UNION SELECT NULL, NULL --"
-                  />
-                </div>
+          <div className="union-content">
+            <ShopUnionLab labDetails={labDetails} />
+            
+            <div className="lab-section">
+              <h2>SQL Injection Playground</h2>
+              <div className="input-section">
+                <input
+                  type="text"
+                  className="injection-input"
+                  value={categoryName}
+                  onChange={e => setCategoryName(e.target.value)}
+                  placeholder="Try: ' UNION SELECT NULL, NULL --"
+                />
                 <button 
-                  className="btn btn-primary mb-3"
+                  className="run-button"
                   onClick={runInjection}
                 >
                   Run Injection
                 </button>
-
-                {error && (
-                  <div className="alert alert-danger" role="alert">
-                    {error}
-                  </div>
-                )}
-
-                {result && (
-                  <div className="mt-3">
-                    <h4 className="h5 mb-2">Query Result:</h4>
-                    <pre className="bg-light p-3 rounded">
-                      {JSON.stringify(result, null, 2)}
-                    </pre>
-                  </div>
-                )}
               </div>
-            </div>
 
-        
+              {error && (
+                <div className="error-message">
+                  {error}
+                </div>
+              )}
+
+              {result && (
+                <div className="result-section">
+                  <h3>Query Result:</h3>
+                  <pre className="result-display">
+                    {JSON.stringify(result, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </>
+      </main>
+
+      <ToastContainer />
+
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5>✅ {labDetails.title} Completed!</h5>
+              <button className="close-button" onClick={() => setShowSuccessModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <p>Do you want to return to the SQL Injection homepage?</p>
+            </div>
+            <div className="modal-footer">
+              <button className="stay-button" onClick={() => setShowSuccessModal(false)}>
+                Stay Here
+              </button>
+              <button className="leave-button" onClick={() => navigate('/sql_injection')}>
+                Go Home
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

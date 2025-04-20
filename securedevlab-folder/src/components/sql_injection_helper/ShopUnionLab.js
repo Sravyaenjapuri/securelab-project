@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import Navbar from '../Navbar';
 const BACKEND_URL = "https://securedevlab.onrender.com";
 
 const CATEGORIES = ['laptops', 'tablets', 'phones'];
@@ -34,6 +34,7 @@ const ShopUnionLab = ({ labDetails }) => {
 
   return (
     <>
+    <Navbar />
     {/* <div className="card shadow-sm"> */}
       <div className="card-body">
         <h1 className="display-6 mb-4">

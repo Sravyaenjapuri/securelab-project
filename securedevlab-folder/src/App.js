@@ -9,6 +9,12 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SecurityLabDashboard from './components/dashboard';
 import Login from './components/login';
+import Signup from './components/signup';
+import ReflectedXSS from './components/cross-site-scripting/ReflectedXSS';
+import StoredXSS from './components/cross-site-scripting/StoredXSS';
+import DOMXSS from './components/cross-site-scripting/DOMXSS';
+import XSSHomepage from './components/cross-site-scripting/homepage';
+
 // Simple authentication check
 const isAuthenticated = () => {
   return localStorage.getItem('isAuthenticated') === 'true';
@@ -28,6 +34,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/" element={
             <ProtectedRoute>
               <SecurityLabDashboard />
@@ -54,6 +61,11 @@ function App() {
               <UnionInjectionLab />
             </ProtectedRoute>
           } />
+          {/* XSS Lab Routes */}
+          <Route path="/xss-lab" element={<ProtectedRoute><XSSHomepage /></ProtectedRoute>} />
+          <Route path="/xss-lab/reflected" element={<ProtectedRoute><ReflectedXSS /></ProtectedRoute>} />
+          <Route path="/xss-lab/stored" element={<ProtectedRoute><StoredXSS /></ProtectedRoute>} />
+          <Route path="/xss-lab/dom" element={<ProtectedRoute><DOMXSS /></ProtectedRoute>} />
         </Routes>
       </Router>
       <ToastContainer />

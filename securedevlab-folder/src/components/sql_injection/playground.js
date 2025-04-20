@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import LoginTester from '../sql_injection_helper/login';
 import { useParams } from 'react-router-dom';
+import Navbar from '../Navbar';
+import './playground.css';
 
 const BACKEND_URL = "https://securedevlab.onrender.com";
 
@@ -10,6 +12,7 @@ const SQLPlayground = () => {
   const [query, setQuery] = useState("SELECT * FROM users;");
   const [queryResult, setQueryResult] = useState(null);
   const [labCompleted, setLabCompleted] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     const fetchLabDetails = async () => {
@@ -20,6 +23,38 @@ const SQLPlayground = () => {
 
     fetchLabDetails();
   }, [labId]);
+
+  const markLabAsCompleted = async () => {
+    try {
+      const userEmail = localStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
+
+      const response = await fetch(`${BACKEND_URL}/api/complete-lab`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_email: userEmail,
+          lab_id: labId,
+          category: 'sql_injection'
+        }),
+      });
+
+      if (response.ok) {
+        setLabCompleted(true);
+        setShowSuccessModal(true);
+      } else {
+        console.error('Failed to mark lab as completed');
+      }
+    } catch (error) {
+      console.error('Error marking lab as completed:', error);
+    }
+  };
 
   const runQuery = async () => {
     try {
@@ -36,63 +71,63 @@ const SQLPlayground = () => {
     }
   };
 
-  return (
+  const handleLabCompletion = () => {
+    markLabAsCompleted();
+  };
 
-    <div className="container py-5">
-      <div className="row">
-        <div className="col-lg-8 mx-auto">
-          {/* Lab Details Card */}
-          <div className="card shadow-sm mb-4">
-            <div className="card-body">
-              <h2 className="card-title h3 mb-3">{labDetails.title}</h2>
-              <h4 className="h5 text-muted mb-3">{labDetails.subtitle}</h4>
-              <p className="card-text">{labDetails.description}</p>
-            </div>
+  return (
+    <div className="page-layout">
+      <Navbar />
+      <main className="main-content">
+        <div className="playground-container">
+          <div className="playground-header">
+            {/* <h1>{labDetails.title}</h1> */}
+            {/* <p className="lab-description">{labDetails.description}</p> */}
           </div>
 
-          {/* Login Tester Section */}
-          <div className="card shadow-sm mb-4">
-            <div className="card-body">
+          <div className="playground-content">
+            <div className="lab-section">
+              <h2>Lab Details</h2>
+              <div className="lab-info">
+                <h3>{labDetails.title}</h3>
+                <h4>{labDetails.subtitle}</h4>
+                <p>{labDetails.description}</p>
+              </div>
+            </div>
+
+            <div className="lab-section">
+              <h2>Login Tester</h2>
               <LoginTester
-              title={labDetails.title}
+                title={labDetails.title}
                 solution={labDetails.solution}
-                onSuccess={() => setLabCompleted(true)}
+                onSuccess={handleLabCompletion}
               />
             </div>
           </div>
-
-          {/* Query Playground Section */}
-          {/* <div className="card shadow-sm">
-            <div className="card-body">
-              <h3 className="card-title h4 mb-3">SQL Query Playground</h3>
-              <div className="mb-3">
-                <textarea
-                  className="form-control font-monospace"
-                  rows={5}
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  placeholder="Enter your SQL query here..."
-                />
-              </div>
-              <button 
-                className="btn btn-primary mb-3"
-                onClick={runQuery}
-              >
-                Run Query
-              </button>
-
-              {queryResult && (
-                <div className="mt-3">
-                  <h4 className="h5 mb-2">Query Result:</h4>
-                  <pre className="bg-light p-3 rounded">
-                    {JSON.stringify(queryResult, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </div>
-          </div> */}
         </div>
-      </div>
+      </main>
+
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5>✅ Lab Completed!</h5>
+              <button className="close-button" onClick={() => setShowSuccessModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <p>Congratulations! You have successfully completed this lab.</p>
+            </div>
+            <div className="modal-footer">
+              <button className="stay-button" onClick={() => setShowSuccessModal(false)}>
+                Stay Here
+              </button>
+              <button className="leave-button" onClick={() => window.location.href = '/sql_injection'}>
+                Return to Labs
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
