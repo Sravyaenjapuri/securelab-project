@@ -77,7 +77,7 @@ const Login = () => {
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('userEmail', data.user.email);
         localStorage.setItem('username', data.user.username);
-        navigate('/');
+        navigate('/dashboard');
       } else {
         toast.error(data.error || 'Invalid verification code');
       }

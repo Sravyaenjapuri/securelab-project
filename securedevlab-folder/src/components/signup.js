@@ -52,7 +52,7 @@ const Signup = () => {
 
       if (response.ok) {
         toast.success('Signup successful! Please login.');
-        navigate('/login');
+        navigate('/');
       } else {
         toast.error(data.error || 'Signup failed');
       }

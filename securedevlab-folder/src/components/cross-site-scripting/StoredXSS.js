@@ -21,7 +21,7 @@ const StoredXSS = () => {
     const userEmail = localStorage.getItem('userEmail');
 
     if (!isAuthenticated || !userEmail) {
-      navigate('/login');
+      navigate('/');
       return;
     }
 
@@ -116,7 +116,7 @@ const StoredXSS = () => {
     const userEmail = localStorage.getItem('userEmail');
     if (!userEmail) {
       setError('Please log in again to view comments.');
-      navigate('/login');
+      navigate('/');
       return;
     }
 
@@ -145,7 +145,7 @@ const StoredXSS = () => {
     const userEmail = localStorage.getItem('userEmail');
     if (!userEmail) {
       setError('Please log in again to submit comments.');
-      navigate('/login');
+      navigate('/');
       return;
     }
 

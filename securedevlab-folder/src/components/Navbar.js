@@ -8,18 +8,18 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="navbar-brand" onClick={() => navigate('/')}>
+        <div className="navbar-brand" onClick={() => navigate('/dashboard')}>
           Security Lab
         </div>
         <div className="navbar-menu">
           <div className="navbar-start">
-            <div className="navbar-item" onClick={() => navigate('/')}>
+            <div className="navbar-item" onClick={() => navigate('/dashboard')}>
               Dashboard
             </div>
             <div className="navbar-item" onClick={() => navigate('/sql_injection')}>

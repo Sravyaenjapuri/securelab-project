@@ -20,7 +20,7 @@ const ReflectedXSS = () => {
     const userEmail = localStorage.getItem('userEmail');
 
     if (!isAuthenticated || !userEmail) {
-      navigate('/login');
+      navigate('/');
       return;
     }
 
