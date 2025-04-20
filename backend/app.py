@@ -24,8 +24,8 @@ DATABASE = 'users.db'
 # Email configuration
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "bhanuja497@gmail.com"  # Replace with your email
-SENDER_PASSWORD = "ykag zonk szdf frzd"   # Replace with your app password
+SENDER_EMAIL = "nikhithareddyrolakanti88@gmail.com"  # Replace with your email
+SENDER_PASSWORD = "ogjs pgab mldf qicf"   # Replace with your app password
 
 # Store verification codes temporarily (in production, use Redis or similar)
 verification_codes = {}
