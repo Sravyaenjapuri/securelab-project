@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import Navbar from '../Navbar';
 import './xssHome.css';
 
-const BACKEND_URL = 'http://localhost:5000'; // Change to your backend URL
+// const BACKEND_URL = 'http://localhost:5000'; // Change to your backend URL
+const BACKEND_URL = 'https://securedevlab.onrender.com'; // Uncomment this for production
 
 const XSSHomepage = () => {
   const [completedLabs, setCompletedLabs] = useState({
