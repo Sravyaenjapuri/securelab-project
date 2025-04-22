@@ -114,7 +114,7 @@ const StoredXSS = () => {
       }
       
       setIsLabCompleted(true);
-      setShowCompletionPrompt(true);
+      // setShowCompletionPrompt(true);
     }
   }, [comments]);
 
@@ -141,7 +141,12 @@ const StoredXSS = () => {
       setError('Failed to clear comments. Please try refreshing the page.');
     }
   };
-
+// Check if the current search query contains an alert script
+const hasAlertScript = (query) => {
+  return query.includes('<script>alert(') || 
+         query.includes('<img src=x onerror=alert(') ||
+         query.includes('"><script>alert(');
+};
   const fetchComments = async () => {
     const userEmail = localStorage.getItem('userEmail');
     if (!userEmail) {
@@ -159,9 +164,17 @@ const StoredXSS = () => {
       if (!response.ok) {
         throw new Error('Failed to fetch comments');
       }
-
+      
       const data = await response.json();
       setComments(data.comments || []);
+      const xssComment = comments.find(comment => hasAlertScript(comment.content));
+
+      if (xssComment) {
+        console.log('Comment with XSS payload:', xssComment);
+        alert(`${xssComment.content}`);
+        setShowCompletionPrompt(true);
+        // Perform additional actions if needed
+      }
     } catch (err) {
       setError('Failed to load comments. Please try again.');
       console.error('Fetch error:', err);

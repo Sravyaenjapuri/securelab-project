@@ -117,6 +117,7 @@ const ReflectedXSS = () => {
             }),
           });
         }
+        alert(searchQuery);
         
         // Mark the lab as completed
         setIsLabCompleted(true);

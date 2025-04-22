@@ -137,11 +137,16 @@ cursor = conn.cursor()
 # cursor.execute('DROP TABLE IF EXISTS users')
 # Update the solution for the record with id = 2
 cursor.execute('''
-UPDATE sql_injection
-SET solution = ?
+DELETE FROM users
 WHERE id = ?
-''', ("' UNION SELECT NULL, NULL --", 2))
-cursor.execute
+''', (2,))
+cursor.executemany('''
+INSERT INTO users (username, password, email)
+VALUES (?, ?, ?)
+''', [
+    ('nikki', '123', 'nikhithareddyrolakanti88@gmail.com'),
+    ('sravya', '123', 'sravyaenjapuri123@gmail.com'),
+])
 
 conn.commit()
 conn.close()
