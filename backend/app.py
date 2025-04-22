@@ -531,7 +531,7 @@ def complete_lab():
         return jsonify({'error': 'User email and category are required'}), 400
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor() 
     
     try:
         # For SQL injection labs, use the lab_id as the lab_type

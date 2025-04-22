@@ -5,19 +5,19 @@ conn = sqlite3.connect('users.db')
 cursor = conn.cursor()
 
 # Create users table (sample schema)
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
-)
-''')
+# cursor.execute('''
+# CREATE TABLE IF NOT EXISTS users (
+#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     username TEXT UNIQUE NOT NULL,
+#     password TEXT NOT NULL
+# )
+# ''')
 
-# Optional: insert sample user
-cursor.execute('''
-INSERT INTO users (username, password)
-VALUES (?, ?)
-''', ('admin', 'admin123'))
+# # Optional: insert sample user
+# cursor.execute('''
+# INSERT INTO users (username, password)
+# VALUES (?, ?)
+# ''', ('admin', 'admin123'))
 
 
 
@@ -37,7 +37,14 @@ VALUES (?, ?)
 #     ('iPhone 14', 'phones'),
 #     ('Galaxy S23', 'phones'),
 # ])
-
+# cursor.executemany('''
+# INSERT INTO products (name, category) VALUES (?, ?)
+# ''', [
+#     ('Dell XPS 13', 'laptops'),
+#     ('iPad Pro', 'tablets'),
+#     ('Google Pixel 7', 'phones'),
+#     ('Lenovo ThinkPad', 'laptops')
+# ])
 
 # cursor.execute('''
 # CREATE TABLE IF NOT EXISTS sql_injection (
@@ -128,7 +135,12 @@ VALUES (?, ?)
 # ''', ('sql_injection', 'bhanuja497@gmail.com', 1))  # 1 means locked
 
 # cursor.execute('DROP TABLE IF EXISTS users')
-
+# Update the solution for the record with id = 2
+cursor.execute('''
+UPDATE sql_injection
+SET solution = ?
+WHERE id = ?
+''', ("' UNION SELECT NULL, NULL --", 2))
 cursor.execute
 
 conn.commit()

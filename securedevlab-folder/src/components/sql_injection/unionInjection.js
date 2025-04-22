@@ -55,6 +55,7 @@ const UnionInjectionLab = () => {
       const res = await fetch(`${BACKEND_URL}/api/lab/${parsedLabId}`);
       const data = await res.json();
       setLabDetails(data);
+      console.log('Lab details:', data);
     };
     fetchLabDetails();
     unlockLabStatus();
@@ -95,28 +96,33 @@ const UnionInjectionLab = () => {
   const runInjection = async () => {
     try {
       setSelectedCategory(categoryName);
+      console.log('Running injection with category:', categoryName);
       const encodedPayload = encodeURIComponent(categoryName);
       const res = await fetch(`${BACKEND_URL}/lab/union-test?category=${encodedPayload}`);
       const data = await res.json();
-
       if (data.success) {
         setResult(data.result);
         setProducts(data.result);
         setError(null);
 
-        if(data.result.length > 0){
+        if(data.result.length > 0 && labDetails.solution==categoryName){
           if(labId==5){
             if(data.result[0].name == 'iPhone'){
               markLabAsCompleted();
             }
           }
+
           else{
             markLabAsCompleted();
           }
         }
+        else{
+          // toast.info("Incorrect code! Try again.");
+        }
       } else {
         setResult([]);
         setProducts([]);
+        toast.info("Incorrect code! Try again.");
         setError(data.error || 'Something went wrong');
       }
     } catch (err) {
