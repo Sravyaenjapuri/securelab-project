@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import './reflectedXSS.css';
 
-const BACKEND_URL = 'https://securedevlab.onrender.com';
+// const BACKEND_URL = 'https://securedevlab.onrender.com';
+const BACKEND_URL = 'http://localhost:5000'; // Change this to your backend URL
+
 
 const ReflectedXSS = () => {
   const [searchQuery, setSearchQuery] = useState('');

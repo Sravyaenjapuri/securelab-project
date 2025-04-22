@@ -109,7 +109,10 @@ const SQLInjectionHomepage = () => {
                     } else {
                       navigate(`/lab/${lab.id}`);
                     }
-                  } else {
+                  } else if (lab.id === 1) {
+                    navigate(`/lab/${lab.id}`);
+                  }
+                  else {
                     alert('This lab is locked. Please do the payment.');
                     window.location.href = 'https://buy.stripe.com/test_4gw9AYfemfXl2hq145';
                   }
