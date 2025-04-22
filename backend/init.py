@@ -82,7 +82,7 @@ cursor = conn.cursor()
 # cursor.execute("UPDATE sql_injection SET image = ? WHERE id = ?", ('https://pentest-tools.com/blog/sql-injection-attacks', 2))
 # cursor.execute("UPDATE sql_injection SET image = ? WHERE id = ?", ('https://pentest-tools.com/blog/sql-injection-attacks', 3))
 # cursor.execute("UPDATE sql_injection SET image = ? WHERE id = ?", ('https://pentest-tools.com/blog/sql-injection-attacks', 4))
-cursor.execute("UPDATE sql_injection SET description = ? WHERE id = ?", ('', 5))
+# cursor.execute("UPDATE sql_injection SET description = ? WHERE id = ?", ('', 5))
  
 
 
@@ -111,6 +111,25 @@ cursor.execute("UPDATE sql_injection SET description = ? WHERE id = ?", ('', 5))
 #      "' UNION SELECT 'iPhone', NULL --")
 # ])
 
+# Create the lab_status table
+# cursor.execute('''
+# CREATE TABLE IF NOT EXISTS lab_status (
+#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     lab_name TEXT NOT NULL,
+#     user_email TEXT NOT NULL,
+#     locked INTEGER DEFAULT 1,  -- 1 means locked, 0 means unlocked
+#     UNIQUE(lab_name, user_email)  -- Ensure no duplicate entries for the same lab and user
+# )
+# ''')
+
+cursor.execute('''
+INSERT INTO lab_status (lab_name, user_email, locked)
+VALUES (?, ?, ?)
+''', ('sql_injection', 'bhanuja497@gmail.com', 1))  # 1 means locked
+
+cursor.execute('DROP TABLE IF EXISTS users')
+
+cursor.execute
 
 conn.commit()
 conn.close()

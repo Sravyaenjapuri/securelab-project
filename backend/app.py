@@ -267,7 +267,7 @@ def union_test_lab():
 def get_labs():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, title, subtitle, image FROM sql_injection")
+    cursor.execute("SELECT id, title, subtitle, image, locked FROM sql_injection")
     labs = cursor.fetchall()
     conn.close()
     return jsonify([dict(lab) for lab in labs])
@@ -277,7 +277,7 @@ def get_labs():
 def get_lab_by_id(lab_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, title, subtitle, description, solution FROM sql_injection WHERE id = ?", (lab_id,))
+    cursor.execute("SELECT id, title, subtitle, description, solution, locked FROM sql_injection WHERE id = ?", (lab_id,))
     lab = cursor.fetchone()
     conn.close()
 
@@ -386,6 +386,17 @@ def signup():
     try:
         cursor.execute("INSERT INTO users (username, password, email) VALUES (?, ?, ?)",
                       (username, hashed_password, email))
+        
+         # Insert default lab statuses for the new user
+        default_labs = [
+            ('sql_injection', email, 1),  # Locked
+            ('reflected', email, 1),     # Locked
+             ('stored', email, 1) 
+        ]
+        cursor.executemany('''
+        INSERT INTO lab_status (lab_name, user_email, locked)
+        VALUES (?, ?, ?)
+        ''', default_labs)
         conn.commit()
         conn.close()
         return jsonify({"message": "User created successfully"}), 201
@@ -586,5 +597,89 @@ def get_completed_labs():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/api/unlock-lab', methods=['POST'])
+def unlock_labs():
+    data = request.get_json()
+    lab_ids = data.get('lab_ids')  # Expecting an array of lab IDs
+
+    if not lab_ids or not isinstance(lab_ids, list):
+        return jsonify({"error": "Lab IDs are required and must be a list"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Update the locked status of the labs
+        cursor.executemany("UPDATE sql_injection SET locked = 0 WHERE id = ?", [(lab_id,) for lab_id in lab_ids])
+        conn.commit()
+        conn.close()
+
+        return jsonify({"success": True, "message": f"Labs {lab_ids} unlocked successfully."})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    
+
+
+
+
+@app.route('/api/lab-status', methods=['GET'])
+def get_lab_status():
+    user_email = request.args.get('email')
+    lab_name = request.args.get('lab_name')
+
+    if not user_email or not lab_name:
+        return jsonify({"error": "User email and lab name are required"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Fetch the lab status for the specific user and lab
+        cursor.execute('''
+        SELECT locked FROM lab_status WHERE user_email = ? AND lab_name = ?
+        ''', (user_email, lab_name))
+        lab_status = cursor.fetchone()
+
+        conn.close()
+
+        if lab_status:
+            return jsonify({"lab_name": lab_name, "locked": lab_status['locked']})
+        else:
+            return jsonify({"error": "Lab not found for the given user"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/unlock-lab-status', methods=['POST'])
+def unlock_lab_status():
+    data = request.get_json()
+    user_email = data.get('user_email')
+    lab_name = data.get('lab_name')
+
+    if not user_email or not lab_name:
+        return jsonify({"error": "User email and lab name are required"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Update the locked status of the lab for the specific user
+        cursor.execute('''
+        UPDATE lab_status
+        SET locked = 0
+        WHERE user_email = ? AND lab_name = ?
+        ''', (user_email, lab_name))
+
+        conn.commit()
+        conn.close()
+
+        # Check if the update was successful
+        if cursor.rowcount > 0:
+            return jsonify({"success": True, "message": f"Lab '{lab_name}' unlocked for user '{user_email}'."})
+        else:
+            return jsonify({"error": "Lab not found for the given user"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -5,7 +5,8 @@ import Navbar from '../Navbar';
 import './playground.css';
 import { useNavigate } from 'react-router-dom';
 
-const BACKEND_URL = "https://securedevlab.onrender.com";
+// const BACKEND_URL = "http://localhost:5000"; // Change this to your backend URL
+const BACKEND_URL = "https://securedevlab.onrender.com"; // Uncomment this for production
 
 const SQLPlayground = () => {
   const navigate = useNavigate();

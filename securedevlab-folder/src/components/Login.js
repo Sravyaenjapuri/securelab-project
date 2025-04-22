@@ -3,7 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './login.css';
 
-const BACKEND_URL = 'https://securedevlab.onrender.com';
+// const BACKEND_URL = 'http://localhost:5000'; // Change this to your backend URL
+const BACKEND_URL = 'https://securedevlab.onrender.com'; // Uncomment this for production
 
 const Login = () => {
   const [credentials, setCredentials] = useState({

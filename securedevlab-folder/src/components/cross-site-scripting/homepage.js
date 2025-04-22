@@ -13,8 +13,58 @@ const XSSHomepage = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [refelect, setReflect] = useState(null);
+  const [stored, setStored] = useState(null);
   useEffect(() => {
+    const fetchLabStatus = async () => {
+      try {
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+          console.error('No user email found');
+          return;
+        }
+    
+        // Make a GET request with query parameters
+        const response = await fetch(`${BACKEND_URL}/api/lab-status?email=${encodeURIComponent(userEmail)}&lab_name=reflected`);
+    
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Lab Status:', data);
+          if (data.locked === 0) {
+            console.log(`Lab '${data.lab_name}' is unlocked.`);
+            setReflect(false); // Lab is unlocked
+          } else {
+            console.log(`Lab '${data.lab_name}' is locked.`);
+            setReflect(true); // Lab is locked
+          }
+        } else {
+          const errorData = await response.json();
+          console.error('Error fetching lab status:', errorData.error);
+        }
+
+        const response1 = await fetch(`${BACKEND_URL}/api/lab-status?email=${encodeURIComponent(userEmail)}&lab_name=stored`);
+    
+        if (response1.ok) {
+          const data = await response1.json();
+          console.log('Lab Status:', data);
+          if (data.locked === 0) {
+            console.log(`Lab '${data.lab_name}' is unlocked.`);
+            setStored(false); // Lab is unlocked
+          } else {
+            console.log(`Lab '${data.lab_name}' is locked.`);
+            setStored(true); // Lab is locked
+          }
+        } else {
+          const errorData = await response1.json();
+          console.error('Error fetching lab status:', errorData.error);
+        }
+
+
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
     const fetchLabCompletion = async () => {
       const userEmail = localStorage.getItem('userEmail');
       if (!userEmail) return;
@@ -42,6 +92,7 @@ const XSSHomepage = () => {
     };
 
     fetchLabCompletion();
+    fetchLabStatus();
   }, []);
 
   const labCards = [
@@ -113,6 +164,33 @@ const XSSHomepage = () => {
                 </div>
                 <h2>{lab.title}</h2>
                 <p>{lab.description}</p>
+
+                {lab.path === 'reflected' && refelect && (
+                  <>
+                  <div className="locked-message">This lab is locked. Please do the payment.</div>
+                  <Link 
+                  to={'https://buy.stripe.com/test_14keVi9U2dPd4pydQQ'} 
+                >
+                  {'Payment'}
+                </Link>
+                </>
+                )}
+                {lab.id === 'stored' && stored && (
+                  <>
+                  <div className="locked-message">This lab is locked. Please do the payment.</div>
+                  <Link 
+                  to={'https://buy.stripe.com/test_4gw9AYfemfXl2hq145'} 
+                >
+                  {'Payment'}
+                </Link>
+                  </>
+                )}
+                {/* <Link 
+                  to={lab.path} 
+                  className={`lab-link ${completedLabs[lab.id] ? 'completed' : ''}`}
+                >
+                  {completedLabs[lab.id] ? 'Completed' : 'Start Lab'}
+                </Link> */}
                 <Link 
                   to={lab.path} 
                   className={`lab-link ${completedLabs[lab.id] ? 'completed' : ''}`}

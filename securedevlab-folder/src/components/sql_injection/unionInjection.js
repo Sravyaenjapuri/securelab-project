@@ -6,7 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Navbar from '../Navbar';
 import './unionInjection.css';
 
-const BACKEND_URL = "https://securedevlab.onrender.com";
+// const BACKEND_URL = "http://localhost:5000"; // Change this to your backend URL
+const BACKEND_URL = "https://securedevlab.onrender.com"; // Uncomment this for production
 
 const UnionInjectionLab = () => {
   const { labId, category } = useParams();
@@ -22,12 +23,41 @@ const UnionInjectionLab = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const unlockLabStatus = async () => {
+      try {
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+          console.error('No user email found');
+          return;
+        }
+  
+        const response = await fetch(`${BACKEND_URL}/api/unlock-lab-status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_email: userEmail,
+            lab_name: 'sql_injection',
+          }),
+        });
+  
+        if (response.ok) {
+          console.log('Lab unlocked successfully');
+        } else {
+          console.error('Failed to unlock the lab');
+        }
+      } catch (error) {
+        console.error('Error unlocking lab status:', error);
+      }
+    };
     const fetchLabDetails = async () => {
       const res = await fetch(`${BACKEND_URL}/api/lab/${parsedLabId}`);
       const data = await res.json();
       setLabDetails(data);
     };
     fetchLabDetails();
+    unlockLabStatus();
   }, [parsedLabId]);
 
   const markLabAsCompleted = async () => {

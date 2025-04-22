@@ -17,6 +17,34 @@ const StoredXSS = () => {
 
   // Check if user is authenticated and initialize user data
   useEffect(() => {
+    const unlockLabStatus = async () => {
+      try {
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+          console.error('No user email found');
+          return;
+        }
+  
+        const response = await fetch(`${BACKEND_URL}/api/unlock-lab-status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_email: userEmail,
+            lab_name: 'stored',
+          }),
+        });
+  
+        if (response.ok) {
+          console.log('Lab unlocked successfully');
+        } else {
+          console.error('Failed to unlock the lab');
+        }
+      } catch (error) {
+        console.error('Error unlocking lab status:', error);
+      }
+    };
     const isAuthenticated = localStorage.getItem('isAuthenticated');
     const userEmail = localStorage.getItem('userEmail');
 
@@ -47,6 +75,7 @@ const StoredXSS = () => {
       clearUserComments(userEmail);
       localStorage.setItem(`xssLabVisited_${userEmail}`, 'true');
     }
+    unlockLabStatus();
   }, [navigate]);
 
   // Reset lab completion status when component mounts
