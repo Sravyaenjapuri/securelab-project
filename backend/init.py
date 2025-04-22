@@ -129,24 +129,31 @@ cursor = conn.cursor()
 # )
 # ''')
 
-# cursor.execute('''
-# INSERT INTO lab_status (lab_name, user_email, locked)
-# VALUES (?, ?, ?)
-# ''', ('sql_injection', 'bhanuja497@gmail.com', 1))  # 1 means locked
+cursor.executemany('''
+INSERT INTO lab_status (lab_name, user_email, locked)
+VALUES (?, ?, ?)
+''', [
+    ('sql_injection', 'nikhithareddyrolakanti88@gmail.com', 1),  # Locked
+    ('reflected', 'nikhithareddyrolakanti88@gmail.com', 1),  # Locked
+    ('stored', 'nikhithareddyrolakanti88@gmail.com', 1),     # Unlocked
+    ('sql_injection', 'sravyaenjapuri123@gmail.com', 1),         # Locked
+    ('reflected', 'sravyaenjapuri123@gmail.com', 1),         # Unlocked
+    ('stored', 'sravyaenjapuri123@gmail.com', 1)            # Locked
+])
 
 # cursor.execute('DROP TABLE IF EXISTS users')
 # Update the solution for the record with id = 2
-cursor.execute('''
-DELETE FROM users
-WHERE id = ?
-''', (2,))
-cursor.executemany('''
-INSERT INTO users (username, password, email)
-VALUES (?, ?, ?)
-''', [
-    ('nikki', '123', 'nikhithareddyrolakanti88@gmail.com'),
-    ('sravya', '123', 'sravyaenjapuri123@gmail.com'),
-])
+# cursor.execute('''
+# DELETE FROM users
+# WHERE id = ?
+# ''', (2,))
+# cursor.executemany('''
+# INSERT INTO users (username, password, email)
+# VALUES (?, ?, ?)
+# ''', [
+#     ('nikki', '123', 'nikhithareddyrolakanti88@gmail.com'),
+#     ('sravya', '123', 'sravyaenjapuri123@gmail.com'),
+# ])
 
 conn.commit()
 conn.close()
